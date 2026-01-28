@@ -28,33 +28,24 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider authProvider) throws Exception {
-
-        http.authenticationProvider(authProvider);
-
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-
-                        .requestMatchers("/app/secure/**").hasRole("ADMIN")
-
+                        .requestMatchers("/login", "/app/login", "/error", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/user/**").hasRole("ADMIN")
-
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/app/login") // GET: page de login (LoginController)
-                        .loginProcessingUrl("/login") // POST: traité par Spring Security
-                        .defaultSuccessUrl("/bidList/list", true)
-                        .failureUrl("/app/login?error")
+                        .loginPage("/login")              // page de login “officielle”
+                        .loginProcessingUrl("/login")     // POST du formulaire (ça colle à ton login.html)
+                        .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/app-logout")
-                        .logoutSuccessUrl("/app/login?logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll());
+                        .logoutUrl("/app-logout")         // colle à tes HTML existants
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                );
 
         return http.build();
     }

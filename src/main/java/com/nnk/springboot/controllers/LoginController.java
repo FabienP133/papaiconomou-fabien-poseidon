@@ -14,6 +14,13 @@ public class LoginController {
         this.userRepository = userRepository;
     }
 
+
+    @GetMapping("/app/login")
+    public String appLogin() {
+        return "login";
+    }
+
+
     @GetMapping("login")
     public ModelAndView login() {
         ModelAndView mav = new ModelAndView();
